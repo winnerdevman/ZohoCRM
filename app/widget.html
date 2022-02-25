@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="plugins/wait/waitMe.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -19,18 +20,27 @@
         
         <li class="drop">
         <span class="dropdown-text">DOT</span>   
-        <ul id="dotFilterList" class="dropdown-menu">
-                  
+        <ul class="dropdown-menu">
+            <li><input type="checkbox" class="dot check" data-val="123456789"/>123456789</li> 
+            <li><input type="checkbox" class="dot check" data-val="234556789"/>234556789</li> 
+            <li><input type="checkbox" class="dot check" data-val="345656789"/>1234567</li>            
         </ul>
         </li>
         <li class="drop">
             <span class="dropdown-text">Attac Vector</span> 
-            <ul id="attackFilterList" class="dropdown-menu">
-               
+            <ul class="dropdown-menu">
+                <li><input type="checkbox" class="avsort check" data-val="av1"/>Attack Vector 1</li> 
+                <li><input type="checkbox" class="avsort check" data-val="av2"/>Attack Vector 2</li> 
+                <li><input type="checkbox" class="avsort check" data-val="av3"/>Attack Vector 3</li>
+                <li><input type="checkbox" class="avsort check" data-val="av4"/>Attack Vector 4</li>
+                <li><input type="checkbox" class="avsort check" data-val="av5"/>Attack Vector 5</li>
+                <li><input type="checkbox" class="avsort check" data-val="av6"/>Attack Vector 6</li>
+                <li><input type="checkbox" class="avsort check" data-val="av7"/>Attack Vector 7</li>     
             </ul>
         </li>
     </ul>
 </div>
+
 </div>
     <div class="panel">
         <p id="arr"></p>
@@ -39,41 +49,24 @@
         </div>
         <div class="graph-container">
             <div class="graph-inner">
-               <div class="left-legend ">
-                <div id="company-name" class="data-row">
-                   Company
-                </div>
-                
-               </div>
-               <div class="rti-data">
-                    <div id="highest-attack-val" class="header-row bg-gray">
-                        <div class="data-col">Index</div>
-                        <div class="data-col av1">84.6</div>
-                        <div class="data-col av2">62.9</div>
-                        <div class="data-col av3">50.4</div>
-                        <div class="data-col av4">37.8</div>
-                        <div class="data-col av5">18.0</div>
-                    </div>
-                    <div id="company-index-val" class="data-row">
-                        <div class="data-col bg-gray"></div>
-                    </div>
-              
-
-                    <div class="data-row av-legend-container">
-                        <div class="data-col">&nbsp;</div>
-                        <!-- <div class="data-col av1"><span class="av-legend">Driver Onboarding</span></div>
-                        <div class="data-col av2"><span class="av-legend">Safety</span></div>
-                        <div class="data-col av3"><span class="av-legend">Dq Files</span></div>
-                        <div class="data-col av4"><span class="av-legend">CSA</span></div>
-                        <div class="data-col av5"><span class="av-legend">HOS</span></div> -->
-                    </div>
+               <div class="left-legend" id="left-legend"></div>
+               <div class="left-totoal-legend" id="left-total-legend"></div>
+               <div class="rti-data" id="rti-data">
+                    <div class="header-row bg-gray"></div>
+                    <!--div class="data-row">
+                        <div class="data-col bg-gray">79.9</div>
+                    </div-->
+                    <div class="data-content-container"></div>
+                    <div class="data-row av-legend-container" id="av-legend-container"></div>
                </div>
             </div>
         </div>
     </div>
     <script type="text/javascript" src="https://js.zohostatic.com/creator/widgets/version/1.0/widgetsdk-min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-
+<script src="js/util.js"></script>
+<script src="js/graph.js"></script>
+<script src="plugins/wait/waitMe.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.2/underscore-umd-min.js"></script>
 <script src="js/index.js"></script>
 </body>

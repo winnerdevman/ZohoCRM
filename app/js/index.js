@@ -2,99 +2,16 @@ const APP_NAME = "customer-portal";
 const USER_REPORT_NAME = "All_Users";
 const DOT_REPORT_NAME = "DOTs";
 const ATTACT_REPORT_NAME = "Reptile_Attack_Vector_Result_Report";
-
-const attackTests = [
-  {
-    Attack_Vector: {
-      display_value: 'HOS',
-      ID: "4184941000000259001"
-    },
-    DOT: {
-      display_value: 'DOT 2',
-      ID: "4184941000000282115"
-    },
-    Total: "48.2"
-  },
-  {
-    Attack_Vector: {
-      display_value: 'CSA',
-      ID: "4184941000000259002"
-    },
-    DOT: {
-      display_value: 'DOT 2',
-      ID: "4184941000000282115"
-    },
-    Total: "42.8"
-  },
-  {
-    Attack_Vector: {
-      display_value: 'Dq Files',
-      ID: "4184941000000259003"
-    },
-    DOT: {
-      display_value: 'DOT 3',
-      ID: "4184941000000282116"
-    },
-    Total: "53.0"
-  },
-  {
-    Attack_Vector: {
-      display_value: 'Safety',
-      ID: "4184941000000259004"
-    },
-    DOT: {
-      display_value: 'DOT 3',
-      ID: "4184941000000282116"
-    },
-    Total: "71.54"
-  },
-  {
-    Attack_Vector: {
-      display_value: 'Driver Onboarding',
-      ID: "4184941000000259005"
-    },
-    DOT: {
-      display_value: 'DOT 3',
-      ID: "4184941000000282116"
-    },
-    Total: "66.2"
-  },
-  {
-    Attack_Vector: {
-      display_value: 'Dq Files',
-      ID: "4184941000000259002"
-    },
-    DOT: {
-      display_value: 'DOT 4',
-      ID: "4184941000000282117"
-    },
-    Total: "57.98"
-  },
-  {
-    Attack_Vector: {
-      display_value: 'Safety',
-      ID: "4184941000000259004"
-    },
-    DOT: {
-      display_value: 'DOT 4',
-      ID: "4184941000000282117"
-    },
-    Total: "49.76"
-  },
-  {
-    Attack_Vector: {
-      display_value: 'Safety',
-      ID: "4184941000000259004"
-    },
-    DOT: {
-      display_value: 'DOT 4',
-      ID: "4184941000000282117"
-    },
-    Total: "83.6"
-  },
-]
+const COLOR_REPORT_NAME = "All_Recommendation_Engines";
 
 ZOHO.CREATOR.init().then(function(data){
+  $('body').waitMe({
+    effect : 'bounce',
+    text : '',
+    bg : "rgba(255,255,255,0.7)",
+    color : "#000"
+  });
+  
   let queryParams = ZOHO.CREATOR.UTIL.getQueryParams();
   let config = {};
   if (Object.keys(queryParams).length > 0 ){
@@ -114,13 +31,58 @@ async function retrieveInfo(config ){
   const company_id = await getCompanyId(config );
   if (company_id == "" ){
     alert("CompanyId don't exist");
+    $('body').waitMe("hide");
     return;
   }
 
-  const dots = await getAllDots(company_id);
-  const attacks = await getAttackVector(dots ); 
-  console.log(attacks);
-  return attacks;
+  let dot_info = await getAllDots(company_id);
+  for (var i = 0; i < dot_info.length; i++ ){
+    try {
+      const attack_info = await getAttackItem(dot_info[i]["ID"]);      
+      let dot_value = await getDotTotal(dot_info[i]["ID"]);
+      dot_info[i]["Attacks"] = attack_info;  
+      dot_info[i]["Index"] = dot_value["Reptile_Theory_Index_0_100"];
+    } catch (error) {
+      $('body').waitMe("hide");
+      return;
+    }    
+  }
+
+  let attack_info = await getAttackIndex(company_id);
+  dot_info.sort(function(a,b){return b.Index - a.Index});
+  attack_info.sort(function(a,b){return b.Reptile_Theory_Index_0_100 - a.Reptile_Theory_Index_0_100});
+  //graph_data = await getAttackInfo(dot_info );
+  color_data = await getColorInfo();
+  drawGraph(dot_info, attack_info, color_data );
+  $('body').waitMe("hide");
+}
+
+async function getDotTotal(dot_id ){
+  let config = {
+    appName: "customer-portal",
+    reportName: "Total_Reptile_Index_Score_Report",
+    page: 1,
+    pageSize: 1,
+    criteria: "(DOT == " + dot_id + ")",
+  };
+  let response = await ZOHO.CREATOR.API.getAllRecords(config );
+  return response.data[0];
+
+}
+
+async function getAttackIndex(companyID){
+  let config = {
+    appName: "customer-portal",
+    reportName: "Attack_vector_multi_DOT_Score_Report",
+    page: 1,
+    pageSize: 10,
+    criteria: '(Company == ' + companyID + ')',
+  }
+
+  let response = await ZOHO.CREATOR.API.getAllRecords(config);
+  console.log(response);
+  return response.data;
+
 }
 
 async function getCompanyId(config ){
@@ -142,15 +104,14 @@ async function getAllDots(companyID ){
   };
 
   let response = await ZOHO.CREATOR.API.getAllRecords(dotsConfig);
-  let dotId = [];
+  let dotInfo = {};
   if (response.data.length > 0) {
-    const allDots = response.data;
-    dotId = _.pluck(allDots, "ID");
+    dotInfo = response.data;
   }
-  return dotId;
+  return dotInfo;
 }
 
-async function getAttackVector(dots ){
+/*async function getAttackVector(dots ){
   let attacks = [];
   for (var i = 0; i < dots.length; i++ ){
     if (i > 0 ) continue;
@@ -166,9 +127,16 @@ async function getAttackVector(dots ){
     attacks = [... item ];
   }
   return attacks;
-}
+}*/
 
-async function getAttackItem(config ){
+async function getAttackItem(dot_id ){
+  const config = {
+    appName: APP_NAME,
+    reportName: ATTACT_REPORT_NAME,
+    page: 1,
+    pageSize: 10,
+    criteria: "(DOT == " + dot_id + ")",
+  }
   let response = await ZOHO.CREATOR.API.getAllRecords(config);
   var attackVectors = response.data;
 
@@ -180,4 +148,13 @@ async function getAttackItem(config ){
   }
 
   return attvArray;
+}
+
+async function getColorInfo(){
+  const config = {
+    appName: APP_NAME,
+    reportName: "All_Recommendation_Engines",
+  }
+  let response = await ZOHO.CREATOR.API.getAllRecords(config);
+  return response;
 }
